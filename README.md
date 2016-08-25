@@ -4,7 +4,7 @@ This Docker container contains Amazon EC2 scripts to simplify reporting addition
 
 ## Running it
 
-Build and run it. If you have correct IAM role associated with the instance, it will start working immediately.
+Build and run it in `--privileged` mode. If you have correct IAM role associated with the instance, it will start working immediately.
 
 See [Configuration](#Configuration) section for the ways to specify credentials.
 
