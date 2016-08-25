@@ -2,20 +2,41 @@
 
 This Docker container contains Amazon EC2 scripts to simplify reporting additional EC2 instance information to Cloudwatch. These Perl scripts comprise a fully functional examples that reports memory, swap, and disk space utilization metrics for a Linux instance. You can learn more about the scripts [here](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/mon-scripts.html).
 
-## Getting started
+## Running it
 
-1. Create `awscreds.template` with your IAM credentials. You can jumpstart the process by copying and modifying the example file with `cp awscreds.template.example awscreds.template`. For more information regarding creating new IAM role or modifying existing IAM role for your EC2 instance go [here](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/mon-scripts.html#mon-scripts-getstarted).
+Build and run it. If you have correct IAM role associated with the instance, it will start working immediately.
 
-2. Create `crontab` to specify what metrics and when you would like reported to CloudWatch. Again, you can speed up development with copying and modifying the example file with `cp crontab.example crontab`. The example cron task reports instance memory and disk usage to CloudWatch every minute. To find the list of all options and what they mean, refer to the official documentation [here](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/mon-scripts.html#mon-scripts-using). While modifying the options per your requirements, make sure to keep the following in mind:
+See [Configuration](#Configuration) section for the ways to specify credentials.
 
-Unless you move the AWS credential file, the following path should remain the same
+## Configuration
+
+You can specify credentials in the following ways:
+
+### IAM role
+
+IAM role is automatically taken from instance's metadata. Role may be also put into `AWS_IAM_ROLE` variable.
+
+Instance's IAM role should have the following permissions:
+
+- `cloudwatch:PutMetricData`
+- `cloudwatch:GetMetricStatistics`
+- `cloudwatch:ListMetrics`
+- `ec2:DescribeTags`
+
+### Credentials file
+
+Create credentials file with the following content:
 
 ```
---aws-credential-file=/aws-scripts-mon/awscreds.template
+AWSAccessKeyId=YourAccessKeyID
+AWSSecretKey=YourSecretAccessKey
 ```
 
-Correct `disk-path` is required to successfully report disk usage. For simpler configuration, `/etc/hosts` should suffice but feel free to double check if you see any issues.
+Add it to the container to path `/awscreds`: `docker run -v ./aws_creds_file.txt:/awscreds`
 
-## Debugging
+### Environment
 
-If you are encountering any issues with reporting EC2 metrics in production, you may try the included debugging `crontab` file. Copy and modify the debugging example file with `cp crontab.example-debugging crontab`. The two key differences is that the output of cron job is verbose and written to `/var/log/cron.log` file.
+Use the following env. variables for credentials:
+
+1. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+2. `AWS_IAM_ROLE` - IAM role name, used only if `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` not specified/empty.
