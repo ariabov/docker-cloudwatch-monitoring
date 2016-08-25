@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -n "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --from-cron --mem-util --mem-used --mem-avail --disk-path=/etc/hosts --disk-space-util --disk-space-avail --disk-space-used --auto-scaling" > /etc/crontab
+echo -n "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --mem-util --mem-used --mem-avail --disk-path=/etc/hosts --disk-space-util --disk-space-avail --disk-space-used --auto-scaling" > /etc/crontab
 
 # By default script gets creds automatically, but you can specify IAM role or creds
 if [ -f "/awscreds" ] && [ "`cat "/awscreds" | grep 'AWSAccessKeyId'`" ] && [ "`cat "/awscreds" | grep 'AWSSecretKey'`" ]; then
