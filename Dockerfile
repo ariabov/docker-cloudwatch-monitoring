@@ -22,3 +22,4 @@ WORKDIR aws-scripts-mon
 ADD ./entry.sh /entry.sh
 RUN chmod +x /entry.sh
 ENTRYPOINT ["/entry.sh"]
+CMD ["--mem-util", "--mem-used", "--mem-avail", "--disk-space-util", "--disk-space-avail", "--disk-space-used", "--disk-path=/etc/hosts"]

@@ -4,9 +4,13 @@ This Docker container contains Amazon EC2 scripts to simplify reporting addition
 
 ## Running it
 
-Build and run it in `--privileged` mode. If you have correct IAM role associated with the instance, it will start working immediately.
+Use [CloudWatch monitoring scripts options](http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/mon-scripts.html#mon-scripts-using) with the container. Run it in `--privileged` mode.
 
-See [Configuration](#Configuration) section for the ways to specify credentials.
+```
+docker run --privileged deadroot/docker-cloudwatch-monitoring --mem-util --mem-used --mem-avail --disk-space-util --disk-space-avail --disk-space-used --disk-path=/etc/hosts
+```
+
+If you have correct IAM role associated with the instance, it will work without explicit credentials specification. See [Configuration](#Configuration) section for the ways to specify credentials.
 
 ## Configuration
 
@@ -32,7 +36,7 @@ AWSAccessKeyId=YourAccessKeyID
 AWSSecretKey=YourSecretAccessKey
 ```
 
-Add it to the container to path `/awscreds`: `docker run -v ./aws_creds_file.txt:/awscreds`
+Add it to the container to path `/awscreds`: `docker run -v ./aws_creds_file.txt:/awscreds ...`
 
 ### Environment
 
