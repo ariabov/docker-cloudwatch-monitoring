@@ -13,6 +13,26 @@ elif [ "${AWS_IAM_ROLE}" ]; then
   echo "Fonnd IAM role"
 fi
 
-echo "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --auto-scaling ${_CRED_OPT} $@" > /etc/crontab
+echo -n '' > /etc/crontab
+while getopts ':msd:' opt; do
+  case "$opt" in
+    m)
+      echo "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --auto-scaling ${_CRED_OPT} --mem-util --mem-used --mem-avail" >> /etc/crontab
+    ;;
+    d)
+      echo "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --auto-scaling ${_CRED_OPT} --disk-path=${OPTARG} --disk-space-util --disk-space-avail --disk-space-used" >> /etc/crontab
+    ;;
+    s)
+      echo "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --auto-scaling ${_CRED_OPT} --swap-util --swap-used" >> /etc/crontab
+    ;;
+    :)
+      echo "Need parameter for -${OPTARG}"
+    ;;
+    ?)
+      echo "Unsupported option -${OPTARG}"
+    ;;
+  esac
+done
+
 crontab /etc/crontab
 crond -f

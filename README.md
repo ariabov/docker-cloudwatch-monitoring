@@ -4,10 +4,15 @@ This Docker container contains Amazon EC2 scripts to simplify reporting addition
 
 ## Running it
 
-Use [CloudWatch monitoring scripts options](http://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/mon-scripts.html#mon-scripts-using) with the container. Run it in `--privileged` mode.
+Run it in `--privileged` mode.
+
+Options:
+- `-d disk_path` - report `disk_path` disk usage, mat be used multiple times
+- `-s` - report swap usage
+- `-m` - report memory usage
 
 ```
-docker run --privileged deadroot/docker-cloudwatch-monitoring --mem-util --mem-used --mem-avail --disk-space-util --disk-space-avail --disk-space-used --disk-path=/etc/hosts
+docker run --privileged deadroot/docker-cloudwatch-monitoring -m -s -d /etc/hosts -d /mnt/a
 ```
 
 If you have correct IAM role associated with the instance, it will work without explicit credentials specification. See [Configuration](#Configuration) section for the ways to specify credentials.
