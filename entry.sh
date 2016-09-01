@@ -20,9 +20,6 @@ while getopts ':msd:' opt; do
       echo "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --auto-scaling ${_CRED_OPT} --mem-util --mem-used --mem-avail" >> /etc/crontab
     ;;
     d)
-      mpath=`echo "$OPTARG" | cut -d ':' -f 1`
-      dpath=`echo "$OPTARG" | cut -d ':' -f 2`
-      [ "$dpath" ] && mkdir -p "$mpath" && mount -t auto -o ro,noatime "$dpath" "$mpath"
       echo "* * * * * /aws-scripts-mon/mon-put-instance-data.pl --auto-scaling ${_CRED_OPT} --disk-path=${OPTARG} --disk-space-util --disk-space-avail --disk-space-used" >> /etc/crontab
     ;;
     s)
