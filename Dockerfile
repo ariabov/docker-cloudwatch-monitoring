@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:14.04
 MAINTAINER https://github.com/ariabov
 
 # Install monitoring scripts
