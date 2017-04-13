@@ -1,1 +1,0 @@
-* * * * * /aws-scripts-mon/mon-put-instance-data.pl --mem-util --mem-used --mem-avail --disk-path=/etc/hosts --disk-space-util --disk-space-avail --disk-space-used --from-cron --aws-credential-file=/aws-scripts-mon/awscreds.template
