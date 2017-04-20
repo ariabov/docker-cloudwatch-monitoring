@@ -44,6 +44,9 @@ AWSSecretKey=YourSecretAccessKey
 Add it to the container to path `/awscreds`: `docker run -v ./aws_creds_file.txt:/awscreds ...`
 
 ### Environment
+Use the following env. Variable to set the crontab timeframe.
+
+1. `CWM_CRON_TIME` ie `CWM_CRON_TIME="*/5 * * * *"` the default is `CWM_CRON_TIME="* * * * *"`
 
 Use the following env. variables for credentials:
 
