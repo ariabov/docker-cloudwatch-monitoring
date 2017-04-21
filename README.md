@@ -4,7 +4,7 @@ This Docker container contains Amazon EC2 scripts to simplify reporting addition
 
 ## Running it
 
-Run it in `--privileged` mode.
+Run with host `/proc/` mounted readonly to `/host/proc/`
 
 Options:
 - `-d disk_path` - report `disk_path` disk usage, mat be used multiple times
@@ -12,7 +12,7 @@ Options:
 - `-m` - report memory usage
 
 ```
-docker run --privileged deadroot/docker-cloudwatch-monitoring -m -s -d /etc/hosts -d /mnt/a
+docker run -v /proc/:/host/proc/:ro -v /media:/mnt/a:ro unifio/cloudwatch-monitoring -m -s -d /etc/hosts -d /mnt/a
 ```
 
 If you have correct IAM role associated with the instance, it will work without explicit credentials specification. See [Configuration](#Configuration) section for the ways to specify credentials.
