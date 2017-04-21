@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.5
 
 ENV AWS_ACCESS_KEY_ID=""
 ENV AWS_SECRET_ACCESS_KEY=""
@@ -16,7 +16,9 @@ RUN update-ca-certificates
 
 RUN wget http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip && \
   unzip CloudWatchMonitoringScripts-1.2.1.zip && \
-  rm CloudWatchMonitoringScripts-1.2.1.zip
+  rm CloudWatchMonitoringScripts-1.2.1.zip && \
+  /bin/sed -i 's#/proc/meminfo#/host/proc/meminfo#g' /aws-scripts-mon/mon-put-instance-data.pl
+
 WORKDIR aws-scripts-mon
 
 ADD ./entry.sh /entry.sh
