@@ -21,49 +21,44 @@ if [ "$_CRED_OPT" ]; then
   CRON_OUTPUT_BASE+=("${_CRED_OPT}")
 fi
 
-ARGS=()
-
-# Checks if ARGS already contains the given value
-has_arg() {
-  local element
-  for element in "${@:2}"; do
-    [ "${element}" == "${1}" ] && return 0
-  done
-  return 1
-}
-# Adds the given argument if not specified
-add_arg() {
-  local arg="${1}"
-  [ $# -ge 1 ] && local val="${2}"
-  if ! has_arg "${arg}" "${ARGS[@]}"; then
-    ARGS+=("${arg}")
-    [ $# -ge 1 ] && ARGS+=("${val}")
-  fi
-}
-# Adds the given argument duplicates ok.
-add_arg_simple() {
-  local arg="${1}"
-  [ $# -ge 1 ] && local val="${2}"
-  ARGS+=("${arg}")
-  [ $# -ge 1 ] && ARGS+=("${val}")
-}
-
 while getopts ':msd:' opt; do
   case "$opt" in
     m)
-      add_arg "--mem-util"
-      add_arg "--mem-used"
-      add_arg "--mem-avail"
+      ARGS=()
+      ARGS+=("--mem-util")
+      ARGS+=("--mem-used")
+      ARGS+=("--mem-avail")
+      MEM_OUTPUT=(${CRON_OUTPUT_BASE[@]} ${ARGS[@]})
+      ## Check for Cron arg
+      if [ "$CWM_CRON_TIME" ];then
+        echo "${CWM_CRON_TIME}" "${MEM_OUTPUT[@]}" >> /etc/crontab
+      else
+        echo "* * * * *" "${MEM_OUTPUT[@]}" >> /etc/crontab
+      fi
       ;;
     d)
-      add_arg "--disk-space-util"
-      add_arg "--disk-space-avail"
-      add_arg "--disk-space-used"
-      add_arg_simple "--disk-path=${OPTARG}"
+      ARGS=()
+      ARGS+=("--disk-space-util")
+      ARGS+=("--disk-space-avail")
+      ARGS+=("--disk-space-used")
+      ARGS+=("--disk-path=${OPTARG}")
+      DISK_OUTPUT=(${CRON_OUTPUT_BASE[@]} ${ARGS[@]})
+      if [ "$CWM_CRON_TIME" ];then
+        echo "${CWM_CRON_TIME}" "${DISK_OUTPUT[@]}" >> /etc/crontab
+      else
+        echo "* * * * *" "${DISK_OUTPUT[@]}" >> /etc/crontab
+      fi
       ;;
     s)
-      add_arg "--swap-util"
-      add_arg "--swap-used"
+      ARGS=()
+      ARGS+=("--swap-util")
+      ARGS+=("--swap-used")
+      SWAP_OUTPUT=(${CRON_OUTPUT_BASE[@]} ${ARGS[@]})
+      if [ "$CWM_CRON_TIME" ];then
+        echo "${CWM_CRON_TIME}" "${SWAP_OUTPUT[@]}" >> /etc/crontab
+      else
+        echo "* * * * *" "${SWAP_OUTPUT[@]}" >> /etc/crontab
+      fi
       ;;
     \?)
       set +x
@@ -80,13 +75,6 @@ done
 shift "$((OPTIND-1))"
 # store remaining arguments for future use possibly
 #USER_ARGS=("${@}")
-CRON_OUTPUT_BASE=(${CRON_OUTPUT_BASE[@]} ${ARGS[@]})
-## Check for Cron arg
-if [ "$CWM_CRON_TIME" ];then
-  echo "${CWM_CRON_TIME}" "${CRON_OUTPUT_BASE[@]}" >> /etc/crontab
-else
-  echo "* * * * *" "${CRON_OUTPUT_BASE[@]}" >> /etc/crontab
-fi
 
 crontab /etc/crontab
 crond -f
