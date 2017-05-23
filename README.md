@@ -48,6 +48,10 @@ Use the following env. Variable to set the crontab timeframe.
 
 1. `CWM_CRON_TIME` ie `CWM_CRON_TIME="*/5 * * * *"` the default is `CWM_CRON_TIME="* * * * *"`
 
+Use the following env. Variable to set crontab to debug. The default is to pipe stdout from scripts to /dev/null
+
+1. `CWM_CRON_DEBUG` ie `CWM_CRON_DEBUG=1` the default is `CWM_CRON_DEBUG=`
+
 Use the following env. variables for credentials:
 
 1. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
