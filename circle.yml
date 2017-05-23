@@ -1,0 +1,30 @@
+machine:
+  environment:
+    CW_SCRIPTS_VERSION: 1.2.1
+    DOCKER_IMAGE: 'unifio/cloudwatch-monitoring'
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - "~/docker"
+  override:
+    - docker info
+    - if [[ -e ~/docker/image.tar ]]; then docker load --input ~/docker/image.tar; fi
+    - docker build --rm=false -t ${DOCKER_IMAGE} .
+    - mkdir -p ~/docker
+    - docker save ${DOCKER_IMAGE} > ~/docker/image.tar
+
+test:
+  override:
+    - docker run --entrypoint=perl ${DOCKER_IMAGE} --version
+    - docker run --entrypoint=./mon-put-instance-data.pl ${DOCKER_IMAGE} --version
+    - docker run --entrypoint=./mon-get-instance-stats.pl ${DOCKER_IMAGE} --version
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker tag -f `docker images | grep -E "${DOCKER_IMAGE}" | awk '{print $3}'` ${DOCKER_IMAGE}:${CW_SCRIPTS_VERSION}.${CIRCLE_BUILD_NUM}
+      - docker push ${DOCKER_IMAGE}

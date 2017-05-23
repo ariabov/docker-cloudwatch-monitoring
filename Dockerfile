@@ -1,28 +1,27 @@
-FROM ubuntu
-MAINTAINER https://github.com/ariabov
+FROM alpine:3.5
 
-# Install monitoring scripts
+ENV AWS_ACCESS_KEY_ID=""
+ENV AWS_SECRET_ACCESS_KEY=""
+ENV AWS_IAM_ROLE=""
 
-RUN apt-get update && \
-  apt-get install -y unzip wget libwww-perl libdatetime-perl && \
-  rm -rf /tmp/* /var/tmp/*
+RUN apk add --update \
+  coreutils \
+  wget \
+  unzip \
+  bash \
+  ca-certificates \
+  perl-datetime perl-libwww perl-lwp-protocol-https
+RUN rm -rf /var/cache/apk/*
+RUN update-ca-certificates
 
 RUN wget http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip && \
   unzip CloudWatchMonitoringScripts-1.2.1.zip && \
-  rm CloudWatchMonitoringScripts-1.2.1.zip
+  rm CloudWatchMonitoringScripts-1.2.1.zip && \
+  /bin/sed -i 's#/proc/meminfo#/host/proc/meminfo#g' /aws-scripts-mon/mon-put-instance-data.pl
 
 WORKDIR aws-scripts-mon
 
-COPY awscreds.template awscreds.template
-
-# Setup cron
-
-ADD crontab /etc/crontab
-RUN crontab /etc/crontab
-
-# Log file for debugging
-
-RUN touch /var/log/cron.log
-RUN chmod 0644 /var/log/cron.log
-
-ENTRYPOINT cron -f
+ADD ./entry.sh /entry.sh
+RUN chmod +x /entry.sh
+ENTRYPOINT ["/entry.sh"]
+CMD ["-m", "-d", "/etc/hosts"]
